@@ -19,7 +19,7 @@ class Instagramflickr_Install {
 
 		// Create the database tables.
 		// Also include table_prefix in name
-		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix'). '`instgramflickr` (
+		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix'). 'instgramflickr` (
 		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `parent_id` bigint(20) DEFAULT \'0\',
 		  `incident_id` bigint(20) unsigned DEFAULT \'0\',
@@ -40,6 +40,22 @@ class Instagramflickr_Install {
 		  KEY `incident_id` (`incident_id`),
 		  KEY `reporter_id` (`reporter_id`)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT=\'Stores instagram and flickr photo details\' AUTO_INCREMENT=1 ;');
+
+		// Create the settings tables.
+		// Also include table_prefix in name
+		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix').'instagramflickr_settings` (
+			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  			`flickr_tag` varchar(255) DEFAULT NULL,
+  			`flickr_id` varchar(15) DEFAULT NULL,
+  			`num_of_photos` tinyint(4) NOT NULL DEFAULT \'0\',
+  			`image_width` int(11) NOT NULL DEFAULT \'500\',
+  			`image_height` int(11) NOT NULL DEFAULT \'375\',
+  			`block_position` varchar(15) DEFAULT NULL,
+  			`enable_cache` int(5) NOT NULL,
+  			`block_no_photos` int(5) NOT NULL,
+  			PRIMARY KEY (`id`)
+		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
+
 	}
 
 	/**
@@ -48,5 +64,7 @@ class Instagramflickr_Install {
 	public function uninstall()
 	{
 		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instgramflickr');
+
+		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instgramflickr_settings');
 	}
 }
