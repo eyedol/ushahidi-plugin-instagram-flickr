@@ -19,7 +19,19 @@ class instagramflickr {
 		// Add a Sub-Nav Link to messages links
 		Event::add('ushahidi_action.nav_admin_messages', array($this, '_flickr_link'));
 
-		Event::add('ushahidi_action.admin_messages_custom_layout', array($this,'_instagramflickr_view'));
+		// Hook into the messages controller
+		if (Router::$controller == 'messages' AND Router::$method == 'index')
+		{ 
+			// Only when we're on the flickr and instagram pages
+			// FIXME:: use a better ID to identify flickr and instragm services
+			// HERE 4 is Flickr and 5 is Instagram
+			if (Router::$segments[3] == 4 OR Router::$segments[3] == 5 )
+			{ 
+				Event::add('ushahidi_action.admin_messages_custom_layout', array($this,'_instagramflickr_view'));
+			}
+		}
+
+
 		Event::add('ushahidi_action.nav_admin_settings', array($this,
 			'_settings_link'));
 	}
