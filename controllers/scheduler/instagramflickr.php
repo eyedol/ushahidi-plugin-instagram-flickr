@@ -119,32 +119,32 @@ class Instagramflickr_Controller extends Controller {
 			}
 
 			if ($reporter->level_id > 1 AND 
-					count(ORM::factory('instgramflickr')
+					count(ORM::factory('instagramflickr')
 						->where('service_photoid', $photo_id)
 						->find_all()) == 0 )
 			{
 				// Save Email as Message
-				$instgramflickr = new Instagramflickr_Model();
-				$instgramflickr->parent_id = 0;
-				$instgramflickr->incident_id = 0;
-				$instgramflickr->user_id = 0;
-				$instgramflickr->reporter_id = $reporter->id;
-				$instgramflickr->photo_from = $name;
-				$instgramflickr->photo_to = null;
-				$instgramflickr->photo_title = $title;
-				$instgramflickr->photo_description = $description;
-				$instgramflickr->photo_type = 1; // Inbox
-				$instgramflickr->photo_date = $date;
-				$instgramflickr->service_photoid = $photo_id;
-				$instgramflickr->latitude = $latitude;
-				$instgramflickr->longitude = $longitude;
-				$instgramflickr->save();
+				$instagramflickr = new Instagramflickr_Model();
+				$instagramflickr->parent_id = 0;
+				$instagramflickr->incident_id = 0;
+				$instagramflickr->user_id = 0;
+				$instagramflickr->reporter_id = $reporter->id;
+				$instagramflickr->photo_from = $name;
+				$instagramflickr->photo_to = null;
+				$instagramflickr->photo_title = $title;
+				$instagramflickr->photo_description = $description;
+				$instagramflickr->photo_type = 1; // Inbox
+				$instagramflickr->photo_date = $date;
+				$instagramflickr->service_photoid = $photo_id;
+				$instagramflickr->latitude = $latitude;
+				$instagramflickr->longitude = $longitude;
+				$instagramflickr->save();
 
 				//Add media
 				$media = new Media_Model();
 				$media->location_id = 0;
 				$media->incident_id = 0;
-				$media->message_id = $instgramflickr->id;
+				$media->message_id = $instagramflickr->id;
 				$media->media_type = 1; // Images
 				$media->media_link = $photo_link;
 				$media->media_medium = $photo_medium;
@@ -193,7 +193,7 @@ class Instagramflickr_Controller extends Controller {
 
 					// Add media
 					$media = ORM::factory("media")
-						->where("message_id", $instgramflickr->id)
+						->where("message_id", $instagramflickr->id)
 						->find_all();
 					foreach ($media AS $m)
 					{

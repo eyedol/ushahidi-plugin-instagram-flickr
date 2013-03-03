@@ -6,5 +6,5 @@
 class Instagramflickr_Model extends ORM {
 
 	// Table name
-	protected $table_name = 'instgramflickr';
+	protected $table_name = 'instagramflickr';
 }

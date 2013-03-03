@@ -19,7 +19,7 @@ class Instagramflickr_Install {
 
 		// Create the database tables.
 		// Also include table_prefix in name
-		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix'). 'instgramflickr` (
+		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix'). 'instagramflickr` (
 		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `parent_id` bigint(20) DEFAULT \'0\',
 		  `incident_id` bigint(20) unsigned DEFAULT \'0\',
@@ -88,8 +88,8 @@ class Instagramflickr_Install {
 	 */
 	public function uninstall()
 	{
-		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instgramflickr');
+		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instagramflickr');
 
-		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instgramflickr_settings');
+		$this->db->query('DROP TABLE `'.Kohana::config('database.default.table_prefix').'instagramflickr_settings');
 	}
 }
