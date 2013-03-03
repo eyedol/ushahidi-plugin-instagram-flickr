@@ -167,7 +167,7 @@ class instagramflickr {
 		    ->where('service_id', $this->service_id)
 		    ->where('photo_type', 1)
 		    ->count_all();
-		        
+		       
 		$view->pagination = $pagination;
 		$view->photos = $photos;
 		$view->service_id = $this->service_id;

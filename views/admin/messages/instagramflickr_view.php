@@ -64,11 +64,11 @@
 					foreach ($photos as $photo)
 					{
 						$photo_id = $photo->id;
-						$photo_from = "okay";
+						$photo_from = $photo->reporter->service_account;
 						$photo_to = strip_tags($photo->photo_to);
 						$incident_id = $photo->incident_id;
 						$photo_title = text::auto_link(strip_tags($photo->photo_title));
-						$photo_description = nl2br(text::auto_link(strip_tags($photo->photot_description)));
+						$photo_description = nl2br(text::auto_link(strip_tags($photo->photo_description)));
 						$photo_date = date('Y-m-d  H:i', strtotime($photo->photo_date));
 						$photo_type = $photo->photo_type;
 						$photo_level = $photo->photo_level;
@@ -91,13 +91,14 @@
 									</a>
 								</div>
 								<p><?php echo $photo_description; ?></p>
-								<?php echo $message_detail; ?>
+								
 
 								<?php
-								if ($message_detail OR $message->media != null)
+								if ($photo_description OR $photo->media != null)
 								{
 									// Retrieve Attachments if any
-									foreach($photo->media as $foto) 
+									$media = media::get_media($photo_id);
+									foreach($media as $foto) 
 									{
 										if ($foto->media_type == 1)
 										{
@@ -106,8 +107,8 @@
 											$thumb = $foto->media_thumb;
 											$photo_link = $foto->media_link;
 											$prefix = url::base().Kohana::config('upload.relative_directory');
-											print "<a class='photothumb' rel='lightbox-group".$photo_id."' href='$prefix/$photo_link'>";
-											print "<img src=\"$prefix/$thumb\" border=\"0\" >";
+											print "<a class='photothumb' rel='lightbox-group".$photo_id."' href='$photo_link'>";
+											print "<img src=\"$thumb\" border=\"0\" >";
 											print "</a>";
 											print "</div>";
 										}
@@ -139,7 +140,7 @@
 									echo "<li class=\"none-separator\"><a href=\"". url::base() . 'admin/reports/edit?mid=' . $photo_id ."\">".Kohana::lang('ui_admin.create_report')."?</a></li>";
 								}
 								?>
-								<li><a href="javascript:messagesAction('d','DELETE','<?php echo(rawurlencode($message_id)); ?>')" class="del"><?php echo Kohana::lang('ui_main.delete');?></a></li>
+								<li><a href="javascript:messagesAction('d','DELETE','<?php echo(rawurlencode($photo_id)); ?>')" class="del"><?php echo Kohana::lang('ui_main.delete');?></a></li>
 							</ul>
 						</td>
 					</tr>
