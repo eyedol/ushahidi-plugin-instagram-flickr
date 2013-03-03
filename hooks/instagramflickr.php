@@ -68,16 +68,24 @@ class instagramflickr {
 
 	public function _instagramflickr_view() 
 	{
-		$view = View::factory('admin/messages/flickr');
 		
+		$view = View::factory('admin/messages/instagramflickr_view');
+		
+		//TODO:: Pass necessary variables to the  view file so it displays 
+		//the needed content
+		//Query the instagramflickr table for the needed content.
+
 		//fetch flickrwijit settings from db
 		$settings = ORM::factory('instagramflickr_settings',1);
 		
 		$f = $this->_get_flickr_images();
 		//enable caching
-		if( $settings->enable_cache == 1 ) {
+		
+		if( $settings->enable_cache == 1 ) 
+		{
 			$f->enableCache("fs", "application/cache");	
 		}
+
 		$photos = $f->photos_search( array(
 			'tags' => $settings->flickr_tag,
 			'per_page' => $settings->block_no_photos,
