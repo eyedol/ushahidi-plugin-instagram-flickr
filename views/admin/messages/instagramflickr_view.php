@@ -90,14 +90,16 @@
 										<?php echo $photo_id; ?>
 									</a>
 								</div>
+								<p><?php echo $photo_title ?></p>
 								<p><?php echo $photo_description; ?></p>
 								
 
 								<?php
-								if ($photo_description OR $photo->media != null)
+								$media = media::get_media($photo_id);
+								if ( ($media != NULL) AND count($media) > 0 )
 								{
 									// Retrieve Attachments if any
-									$media = media::get_media($photo_id);
+									
 									foreach($media as $foto) 
 									{
 										if ($foto->media_type == 1)
