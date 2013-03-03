@@ -25,9 +25,13 @@ class instagramflickr {
 			// Only when we're on the flickr and instagram pages
 			// FIXME:: use a better ID to identify flickr and instragm services
 			// HERE 4 is Flickr and 5 is Instagram
-			if (Router::$segments[3] == 4 OR Router::$segments[3] == 5 )
+			if(count(Router::$segments) > 2 ) 
 			{ 
-				Event::add('ushahidi_action.admin_messages_custom_layout', array($this,'_instagramflickr_view'));
+				if (Router::$segments[3] == 4 OR Router::$segments[3] == 5 )
+				{ 
+					Event::add('ushahidi_action.admin_messages_custom_layout', 
+						array($this,'_instagramflickr_view'));
+				}
 			}
 		}
 
