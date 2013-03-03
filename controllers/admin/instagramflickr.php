@@ -21,7 +21,8 @@ class Instagramflickr_Controller extends Tools_Controller {
 		
 	}
 	
-	public function index() {
+	public function index() 
+	{
 		$this->template->content = new View('admin/instagramflickr_form');
 		// setup and initialize form field names
 		$form = array

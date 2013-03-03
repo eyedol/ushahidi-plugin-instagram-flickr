@@ -25,7 +25,7 @@ class Instagramflickr_Install {
 		  `incident_id` bigint(20) unsigned DEFAULT \'0\',
 		  `user_id` int(11) unsigned DEFAULT \'0\',
 		  `reporter_id` bigint(20) unsigned DEFAULT NULL,
-		  `service_messageid` varchar(100) DEFAULT NULL,
+		  `service_photoid` varchar(100) DEFAULT NULL,
 		  `photo_from` varchar(100) DEFAULT NULL,
 		  `photo_to` varchar(100) DEFAULT NULL,
 		  `photo_title` text,

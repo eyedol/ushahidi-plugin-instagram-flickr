@@ -4,6 +4,7 @@
  */
 class Instagramflickr_Controller extends Controller {
 
+	private $flicrk;
 	public function __construct()
 	{
 		parent::__construct();
@@ -11,8 +12,17 @@ class Instagramflickr_Controller extends Controller {
 
 	public function index() 
 	{
+		$this->flickr = flickr::fetch_flickr_images();
 
-		print_r(flickr::photo_search());
+		// Fetch flickr settings from db
+		$settings = ORM::factory('instagramflickr_settings',1);
+		
+		$photos = $this->flickr->photos_search( array(
+			'tags' => $settings->flickr_tag,
+			'per_page' => $settings->block_no_photos,
+			'user_id' => $settings->flickr_id ) );
+
+		$this->_add_flickr($photos);
 	}
 
 	/**
@@ -23,20 +33,72 @@ class Instagramflickr_Controller extends Controller {
 	 */
 	private function _add_flickr($photos)
 	{
-		if (empty($photos) OR ! is_array($photos))
+		$service = ORM::factory('service')
+			->where('service_name', 'Flickr')
+			->find();
+		
+		if ( ! $service->loaded)
 		{
 			return;
 		}
 
-		foreach($photos as $photo) 
+		if (empty($photos['photo']) OR ! is_array($photos['photo']))
 		{
+			return;
+		}
+		
+		foreach($photos['photo'] as $photo) 
+		{
+			// Get details of the photo	
+			$photo_info = $this->flickr->photos_getInfo($photo['id'], 
+				$photo['secret']);
+			
+			$name = $photo_info['owner']['realname'];
+
+			$username = $photo_info['owner']['username']; 
+			
+			$title = $photo_info['title'];
+
+			$photo_id = $photo_info['id'];
+
+			$date = $photo_info['dates']['posted'];
+
+			$description = $photo_info['description'];
+
+			$photo_link = $this->flickr->buildPhotoURL($photo, "Large");
+			
+			$photo_medium = $this->flickr->buildPhotoURL($photo);
+			
+			$photo_thumb = $this->flickr->buildPhotoURL($photo,'Square');
+
+			// Check if there is location attached to the photo
+			if( ( $photo_info['location'] != NULL) AND 
+				(is_array($photo_info['location'])))
+				{
+					$latitude = $photo_info['location']['latitude'];
+
+					$longitude = $photo_info['location']['longitude'];
+				}
+				else 
+				{
+					$latitude = "";
+
+					$longitude = "";
+				}
+
 			$reporter = ORM::factory('reporter')
 				->where('service_id', $service->id)
-				->where('service_account', $photo['flickr'])
+				->where('service_account', $username)
 				->find();
 			
 			if (!$reporter->loaded == true)
 			{
+				// Add new reporter
+				$names = explode(' ', $name, 2);
+				$last_name = '';
+				if (count($names) == 2) {
+					$last_name = $names[1]; 
+				}
 
 				// get default reporter level (Untrusted)
 				$level = ORM::factory('level')
@@ -46,9 +108,9 @@ class Instagramflickr_Controller extends Controller {
 				// Add new reporter
 				$reporter->service_id		= $service->id;
 				$reporter->level_id			= $level->id;
-				$reporter->service_account	= $photo['flickr']; 
-				$reporter->reporter_first	= $photo['from'];
-				$reporter->reporter_last	= null;
+				$reporter->service_account	= $username; 
+				$reporter->reporter_first	= $names[0];
+				$reporter->reporter_last	= $last_name;
 				$reporter->reporter_email	= null;
 				$reporter->reporter_phone	= null;
 				$reporter->reporter_ip		= null;
@@ -58,88 +120,88 @@ class Instagramflickr_Controller extends Controller {
 
 			if ($reporter->level_id > 1 && 
 					count(ORM::factory('instgramflickr')
-						->where('service_photoid', $photo['photo_id'])
+						->where('service_photoid', $photo_id)
 						->find_all()) == 0 )
+			{
+				// Save Email as Message
+				$instgramflickr = new Instagramflickr_Model();
+				$instgramflickr->parent_id = 0;
+				$instgramflickr->incident_id = 0;
+				$instgramflickr->user_id = 0;
+				$instgramflickr->reporter_id = $reporter->id;
+				$instgramflickr->photo_from = $name;
+				$instgramflickr->photo_to = null;
+				$instgramflickr->photo_title = $title;
+				$instgramflickr->photo_description = $description;
+				$instgramflickr->photo_type = 1; // Inbox
+				$instgramflickr->photo_date = $date;
+				$instgramflickr->service_photoid = $photo_id;
+				$instgramflickr->latitude = $latitude;
+				$instgramflickr->longitude = $longitude;
+				$instgramflickr->save();
+
+				//Add media
+				$media = new Media_Model();
+				$media->location_id = 0;
+				$media->incident_id = 0;
+				$media->message_id = $instgramflickr->id;
+				$media->media_type = 1; // Images
+				$media->media_link = $photo_link;
+				$media->media_medium = $photo_medium;
+				$media->media_thumb = $photo_thumb;
+				$media->media_date = date("Y-m-d H:i:s",time());
+				$media->save();
+
+				// Auto-Create A Report if Reporter is Trusted
+				$reporter_weight = $reporter->level->level_weight;
+				$reporter_location = $reporter->location;
+				if ($reporter_weight > 0 AND $reporter_location)
 				{
-					// Save Email as Message
-					$instgramflickr = new Instagramflickr_Model();
-					$instgramflickr->parent_id = 0;
-					$instgramflickr->incident_id = 0;
-					$instgramflickr->user_id = 0;
-					$instgramflickr->reporter_id = $reporter->id;
-					$instgramflickr->photo_from = $photo['from'];
-					$instgramflickr->photo_to = null;
-					$instgramflickr->photo_title = $photo['title'];
-					$instgramflickr->photo_description = $photo['description'];
-					$instgramflickr->photo_type = 1; // Inbox
-					$instgramflickr->photo_date = $photo['date'];
-					$instgramflickr->service_photoid = $photo['photo_id'];
-					$instgramflickr->latitude = $photo['latitude'];
-					$instgramflickr->longitude = $photo['longitude'];
-					$instgramflickr->save();
-
-					//Add media
-					$media = new Media_Model();
-					$media->location_id = 0;
-					$media->incident_id = 0;
-					$media->message_id = $email->id;
-					$media->media_type = 1; // Images
-					$media->media_link = $photo['link'];
-					$media->media_medium = $photo['medium'];
-					$media->media_thumb = $photo['thumb'];
-					$media->media_date = date("Y-m-d H:i:s",time());
-					$media->save();
-
-					// Auto-Create A Report if Reporter is Trusted
-					$reporter_weight = $reporter->level->level_weight;
-					$reporter_location = $reporter->location;
-					if ($reporter_weight > 0 AND $reporter_location)
+					// Create Incident
+					$incident = new Incident_Model();
+					$incident->location_id = $reporter_location->id;
+					$incident->incident_title = $title;
+					$incident->incident_description = $description;
+					$incident->incident_date = $date;
+					$incident->incident_dateadd = date("Y-m-d H:i:s",time());
+					$incident->incident_active = 1;
+					if ($reporter_weight == 2)
 					{
-						// Create Incident
-						$incident = new Incident_Model();
-						$incident->location_id = $reporter_location->id;
-						$incident->incident_title = $photo['title'];
-						$incident->incident_description = $photo['description'];
-						$incident->incident_date = $photo['date'];
-						$incident->incident_dateadd = date("Y-m-d H:i:s",time());
-						$incident->incident_active = 1;
-						if ($reporter_weight == 2)
-						{
-							$incident->incident_verified = 1;
-						}
-						if ($reporter->user_id > 0)
-						{
-							$incident->user_id = $reporter->user_id;
-						}
-						$incident->save();
+						$incident->incident_verified = 1;
+					}
+					if ($reporter->user_id > 0)
+					{
+						$incident->user_id = $reporter->user_id;
+					}
+					$incident->save();
 
-						// Update Message with Incident ID
-						$email->incident_id = $incident->id;
-						$email->save();
+					// Update Message with Incident ID
+					$email->incident_id = $incident->id;
+					$email->save();
 
-						// Save Incident Category
-						$trusted_categories = ORM::factory("category")
-							->where("category_trusted", 1)
-							->find();
-						if ($trusted_categories->loaded)
-						{
-							$incident_category = new Incident_Category_Model();
-							$incident_category->incident_id = $incident->id;
-							$incident_category->category_id = $trusted_categories->id;
-							$incident_category->save();
-						}
+					// Save Incident Category
+					$trusted_categories = ORM::factory("category")
+						->where("category_trusted", 1)
+						->find();
+					if ($trusted_categories->loaded)
+					{
+						$incident_category = new Incident_Category_Model();
+						$incident_category->incident_id = $incident->id;
+						$incident_category->category_id = $trusted_categories->id;
+						$incident_category->save();
+					}
 
-						// Add media
-						$media = ORM::factory("media")
-							->where("message_id", $instgramflickr->id)
-							->find_all();
-						foreach ($media AS $m)
-						{
-							$m->incident_id = $incident->id;
-							$m->save();
-						}
+					// Add media
+					$media = ORM::factory("media")
+						->where("message_id", $instgramflickr->id)
+						->find_all();
+					foreach ($media AS $m)
+					{
+						$m->incident_id = $incident->id;
+						$m->save();
 					}
 				}
 			}
+		}
 	}
 } 
