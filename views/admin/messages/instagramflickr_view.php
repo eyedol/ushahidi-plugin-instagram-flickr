@@ -64,7 +64,7 @@
 					foreach ($photos as $photo)
 					{
 						$photo_id = $photo->id;
-						$photo_from = strip_tags($photo->reporter->service_account);
+						$photo_from = "okay";
 						$photo_to = strip_tags($photo->photo_to);
 						$incident_id = $photo->incident_id;
 						$photo_title = text::auto_link(strip_tags($photo->photo_title));
