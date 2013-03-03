@@ -56,6 +56,31 @@ class Instagramflickr_Install {
   			PRIMARY KEY (`id`)
 		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
 
+		// Check for flickr service
+		$flickr = $this->db->query('SELECT service_name FROM `'.Kohana::config('database.default.table_prefix').'service` WHERE service_name=\'Flickr\'');
+		
+		if($flickr->count() == 0)
+		{ 	
+			// Insert flickr service
+			$this->db->query('INSERT INTO `'.Kohana::config('database.default.table_prefix')
+				.'service` ( 
+					`service_name`, `service_description`, `service_url`, 
+					`service_api`) VALUES 
+			(\'Flickr\', \'Flick Photos\', \'http://flickr.com\', NULL)');
+		}
+
+		$instagram = $this->db->query('SELECT service_name FROM `'.Kohana::config('database.default.table_prefix').'service` WHERE service_name=\'Instagram\'');
+
+		if($instagram->count() == 0)
+		{
+			// Insert instagram service
+			$this->db->query('INSERT INTO `'.Kohana::config('database.default.table_prefix')
+				.'service` ( 
+				`service_name`, `service_description`, `service_url`, 
+				`service_api`) VALUES 
+			(\'Instagram\', \'Instagram Photos\', \'http://instagram.com/\', NULL)');
+		}
+
 	}
 
 	/**

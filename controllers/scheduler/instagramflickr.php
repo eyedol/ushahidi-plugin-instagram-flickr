@@ -56,7 +56,7 @@ class Instagramflickr_Controller extends Controller {
 			$name = $photo_info['owner']['realname'];
 
 			$username = $photo_info['owner']['username']; 
-			
+
 			$title = $photo_info['title'];
 
 			$photo_id = $photo_info['id'];
@@ -118,7 +118,7 @@ class Instagramflickr_Controller extends Controller {
 				$reporter->save();
 			}
 
-			if ($reporter->level_id > 1 && 
+			if ($reporter->level_id > 1 AND 
 					count(ORM::factory('instgramflickr')
 						->where('service_photoid', $photo_id)
 						->find_all()) == 0 )
