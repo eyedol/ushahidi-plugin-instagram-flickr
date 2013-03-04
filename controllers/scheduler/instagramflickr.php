@@ -155,6 +155,7 @@ class Instagramflickr_Controller extends Controller {
 				// Auto-Create A Report if Reporter is Trusted
 				$reporter_weight = $reporter->level->level_weight;
 				$reporter_location = $reporter->location;
+				//Auto-Create A Report if there is location
 				if ($reporter_weight > 0 AND $reporter_location)
 				{
 					// Create Incident

@@ -85,7 +85,7 @@
 						<td class="col-2">
 							<div class="post">
 								<div class="incident-id">
-									<a href="<?php echo url::site() . 'admin/reports/edit?mid=' 
+									<a href="<?php echo url::site() . 'admin/reports/edit?ifid=' 
 									. $photo_id; ?>" class="more">#
 										<?php echo $photo_id; ?>
 									</a>
@@ -139,7 +139,7 @@
 								}
 								else
 								{
-									echo "<li class=\"none-separator\"><a href=\"". url::base() . 'admin/reports/edit?mid=' . $photo_id ."\">".Kohana::lang('ui_admin.create_report')."?</a></li>";
+									echo "<li class=\"none-separator\"><a href=\"". url::base() . 'admin/reports/edit?ifid=' . $photo_id ."\">".Kohana::lang('ui_admin.create_report')."?</a></li>";
 								}
 								?>
 								<li><a href="javascript:messagesAction('d','DELETE','<?php echo(rawurlencode($photo_id)); ?>')" class="del"><?php echo Kohana::lang('ui_main.delete');?></a></li>

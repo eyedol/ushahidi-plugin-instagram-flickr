@@ -27,7 +27,7 @@ class flickr_Core {
 		
 		return $flickr->photos_search( array(
 			'tags' => $settings->flickr_tag,
-			'per_page' => $settings->block_no_photos,
-			'user_id' => $settings->flickr_id ) );
+			'per_page' => $settings->block_no_photos
+		) );
 	}
 }

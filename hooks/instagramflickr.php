@@ -63,6 +63,18 @@ class instagramflickr {
 		.Kohana::lang('instagramflickr.title')."</a>";
 	}
 
+	public function _instagramflickr_submit_report() 
+	{
+		$form = Event::$data;
+
+
+	}
+
+	/**
+	 * Display submitted flickr or instagram messages
+	 * 
+	 * @return [type] [description]
+	 */
 	public function _instagramflickr_view() 
 	{
 
