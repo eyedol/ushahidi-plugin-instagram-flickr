@@ -29,6 +29,9 @@ class Instagramflickr_Install {
 		  `service_photoid` varchar(100) DEFAULT NULL,
 		  `photo_from` varchar(100) DEFAULT NULL,
 		  `photo_to` varchar(100) DEFAULT NULL,
+		  `link` varchar(255) DEFAULT NULL,
+		  `medium` varchar(255) DEFAULT NULL,
+		  `thumbnail` varchar(255) DEFAULT NULL,
 		  `photo_title` text,
 		  `photo_description` text,
 		  `photo_type` tinyint(4) DEFAULT \'1\' COMMENT \'1 - INBOX, 2 - OUTBOX (From Admin), 3 - DELETED\',
@@ -44,11 +47,14 @@ class Instagramflickr_Install {
 
 		// Create the database tables.
 		// Also include table_prefix in name
-		$this->db->query("CREATE TABLE IF NOT EXISTS `{$table_prefix}instagram_gallery` (".
+		$this->db->query("CREATE TABLE IF NOT EXISTS `{$table_prefix}instagramflickr_gallery` (".
 		  "`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,".
 		  "`service_photoid` varchar(100) DEFAULT NULL,".
-		  "`photo_from` varchar(100) DEFAULT NULL,"
-		  "`full_name` varchar(100) DEFAULT NULL,"
+		  "`photo_from` varchar(100) DEFAULT NULL,".
+		  "`full_name` varchar(100) DEFAULT NULL,".
+		  "`link` varchar(255) DEFAULT NULL,".
+		  "`medium` varchar(255) DEFAULT NULL,".
+		  "`thumbnail` varchar(255) DEFAULT NULL,".
 		  "`photo_title` text,".
 		  "`photo_date` datetime DEFAULT NULL,".
 		  "PRIMARY KEY (`id`)".
@@ -76,7 +82,7 @@ class Instagramflickr_Install {
 		{ 	
 			// Insert flickr service
 			$this->db->query("INSERT INTO `{$table_prefix}".
-				.'service` ( 
+				'service` ( 
 					`service_name`, `service_description`, `service_url`, 
 					`service_api`) VALUES 
 			(\'Flickr\', \'Flick Photos\', \'http://flickr.com\', NULL)');
@@ -93,6 +99,12 @@ class Instagramflickr_Install {
 				`service_api`) VALUES 
 			(\'Instagram\', \'Instagram Photos\', \'http://instagram.com/\', NULL)');
 		}
+
+		/*$this->db->query("ALTER TABLE  `{$table_prefix}".'instagramflickr` ADD  
+			`link` VARCHAR( 255 ) DEFAULT NULL AFTER  
+			`longitude` , ADD  
+			`medium` VARCHAR( 255 ) DEFAULT NULL AFTER  `link` ,
+			ADD  `thumbnail` VARCHAR( 255 ) DEFAULT NULL AFTER  `medium`');*/
 
 	}
 
