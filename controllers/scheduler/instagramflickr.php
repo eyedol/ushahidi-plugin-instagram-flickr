@@ -19,7 +19,8 @@ class Instagramflickr_Controller extends Controller {
 		
 		$photos = $this->flickr->photos_search( array(
 			'tags' => $settings->flickr_tag,
-			'per_page' => $settings->block_no_photos) );
+			'per_page' => 50,
+			));
 
 		$this->_add_flickr($photos);
 	}
@@ -54,16 +55,22 @@ class Instagramflickr_Controller extends Controller {
 					$foto['name'] = $photo->user->full_name;
 
 					$foto['username'] = $photo->user->username; 
-
-					$foto['title'] = $photo->caption->text;
+					if( $photo->caption !=NULL) 
+					{ 
+						$foto['title'] = $photo->caption->text;
+						$foto['description'] = $photo->caption->text;
+					}
+					else 
+					{
+						$foto['title'] = "";
+						$foto['description'] = "";
+					}
 
 					$foto['photo_id'] = $photo->id;
 
 					$foto['service_id'] = $service->id; 
 
 					$foto['date'] = $photo->created_time;
-
-					$foto['description'] = $photo->caption->text;
 
 					$foto['link'] = $photo->images->standard_resolution->url;
 					
@@ -85,9 +92,16 @@ class Instagramflickr_Controller extends Controller {
 						$foto['longitude'] = "";
 					}
 					
-					
-					// Add to database
-					$this->_add_to_database($foto);
+					// Add to instagramflickr table
+					if ( ! empty($foto['latitude']) AND ! empty($foto['longitude']))
+					{
+						$this->_add_to_instgramflickr($foto);
+					}
+					else
+					{
+						// Add to the gallery table
+						 $this->_add_to_gallery($foto);
+					}
 				}
 			}
 		}
@@ -97,7 +111,7 @@ class Instagramflickr_Controller extends Controller {
 	 * Add photo details to database
 	 * @param [type] $photo [description]
 	 */
-	private function _add_to_database($photo) 
+	private function _add_to_instgramflickr($photo) 
 	{
 
 		$p = ORM::factory('instagramflickr')->where('service_photoid',
@@ -228,6 +242,32 @@ class Instagramflickr_Controller extends Controller {
 	}
 
 	/**
+	 * Add photo details to gallery table
+	 * @param [type] $photo [description]
+	 */
+	private function _add_to_gallery($photo) 
+	{
+
+		$p = ORM::factory('instagramflickr_gallery')->where('service_photoid',
+			$photo['photo_id'])->find();
+
+		// Avoid duplicates
+		if ( ! $p->loaded AND $p->service_photoid != $photo['photo_id'])
+		{
+			
+			// Save to gallery table
+			$instagramflickr = new Instagramflickr_Gallery_Model();
+			$instagramflickr->photo_from = $photo['username'];
+			$instagramflickr->full_name = $photo['name'];
+			$instagramflickr->photo_title = $photo['title'];
+			$instagramflickr->photo_date = $photo['date'];
+			$instagramflickr->service_photoid = $photo['photo_id'];
+			$instagramflickr->save();
+
+		}
+	}
+
+	/**
 	 * Add flcirk photos to the database
 	 * 
 	 * @param  array $photos Details of the photos
@@ -277,7 +317,7 @@ class Instagramflickr_Controller extends Controller {
 			$foto['thumb'] = $this->flickr->buildPhotoURL($photo,'Square');
 
 			// Location
-			if( ( $photo_info['location'] != NULL) AND 
+			if( ( array_key_exists('location',$photo_info)) AND 
 					(is_array($photo_info['location'])))
 			{
 				$foto['latitude'] = $photo_info['location']['latitude'];
@@ -291,8 +331,16 @@ class Instagramflickr_Controller extends Controller {
 				$foto['longitude'] = "";
 			}
 
-			// Add to database
-			$this->_add_to_database($foto);
+			// Add to instagramflickr table
+			if ( ! empty($foto['latitude']) AND ! empty($foto['longitude']))
+			{
+				$this->_add_to_instgramflickr($foto);
+			}
+			else
+			{
+				// Add to the gallery table
+				$this->_add_to_gallery($foto);
+			}
 		}
 	}
 } 
