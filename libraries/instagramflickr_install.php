@@ -45,21 +45,6 @@ class Instagramflickr_Install {
 		  KEY `reporter_id` (`reporter_id`)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT=\'Stores instagram and flickr photo details\' AUTO_INCREMENT=1 ;');
 
-		// Create the database tables.
-		// Also include table_prefix in name
-		$this->db->query("CREATE TABLE IF NOT EXISTS `{$table_prefix}instagramflickr_gallery` (".
-		  "`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,".
-		  "`service_photoid` varchar(100) DEFAULT NULL,".
-		  "`photo_from` varchar(100) DEFAULT NULL,".
-		  "`full_name` varchar(100) DEFAULT NULL,".
-		  "`link` varchar(255) DEFAULT NULL,".
-		  "`medium` varchar(255) DEFAULT NULL,".
-		  "`thumbnail` varchar(255) DEFAULT NULL,".
-		  "`photo_title` text,".
-		  "`photo_date` datetime DEFAULT NULL,".
-		  "PRIMARY KEY (`id`)".
-		") ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores instagram and flickr photo details' AUTO_INCREMENT=1 ;");
-
 		// Create the settings tables.
 		// Also include table_prefix in name
 		$this->db->query("CREATE TABLE IF NOT EXISTS `{$table_prefix}".'instagramflickr_settings` (
@@ -99,13 +84,6 @@ class Instagramflickr_Install {
 				`service_api`) VALUES 
 			(\'Instagram\', \'Instagram Photos\', \'http://instagram.com/\', NULL)');
 		}
-
-		/*$this->db->query("ALTER TABLE  `{$table_prefix}".'instagramflickr` ADD  
-			`link` VARCHAR( 255 ) DEFAULT NULL AFTER  
-			`longitude` , ADD  
-			`medium` VARCHAR( 255 ) DEFAULT NULL AFTER  `link` ,
-			ADD  `thumbnail` VARCHAR( 255 ) DEFAULT NULL AFTER  `medium`');*/
-
 	}
 
 	/**
